@@ -132,3 +132,6 @@ git remote -v
 
 ## Python 자료형
 int는 정수, str은 문자열, bool은 참과 거짓, list는 목록, dict는 키와 값으로 데이터를 관리합니다.
+
+## 조건문과 반복문
+if, elif, else는 조건에 따라 동작을 선택합니다. for는 정해진 목록을 반복하고 while은 조건이 참인 동안 반복합니다.
