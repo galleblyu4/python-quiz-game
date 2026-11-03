@@ -79,11 +79,21 @@
         "인천"
       ],
       "answer": 2
+    },
+    {
+      "question": "파이썬은 프로그래밍 언어인가요?",
+      "choices": [
+        "네",
+        "아니요",
+        "모르겠어요",
+        "해당 없음"
+      ],
+      "answer": 1
     }
   ],
   "best_score": {
-    "points": 57,
-    "correct": 4,
-    "total": 7
+    "points": 88,
+    "correct": 7,
+    "total": 8
   }
 }
