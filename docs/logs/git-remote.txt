@@ -1,2 +1,3 @@
-$ git remote -v\norigin	https://github.com/galleblyu4/python-quiz-game.git (fetch)
+$ git remote -v
+origin	https://github.com/galleblyu4/python-quiz-game.git (fetch)
 origin	https://github.com/galleblyu4/python-quiz-game.git (push)

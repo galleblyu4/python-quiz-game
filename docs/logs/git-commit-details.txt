@@ -1,0 +1,113 @@
+$ git log --format=%h %s --stat -40
+c7fd934 Merge: Quiz validation improvement
+f5c8a2e Fix: Validate answer input type
+
+ quiz.py | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+66a2c17 Fix: Complete AI evaluation improvements
+
+ README.md                       | 158 ++++++++++++++++++++++------------------
+ docs/logs/git-evidence-check.md |  11 +++
+ docs/logs/performance-1000.md   |  27 ++++---
+ docs/screenshots/README.md      |  19 ++---
+ docs/screenshots/add_quiz.png   | Bin 0 -> 50215 bytes
+ docs/screenshots/git-log.png    | Bin 0 -> 72809 bytes
+ docs/screenshots/list.png       | Bin 0 -> 64062 bytes
+ docs/screenshots/play.png       | Bin 0 -> 45102 bytes
+ docs/screenshots/score.png      | Bin 0 -> 23576 bytes
+ game.py                         |  22 +++---
+ performance_test.py             | 102 +++++++++++++++++---------
+ test_backup.py                  |  43 ++++++++++-
+ tools/collect_git_evidence.py   |  31 ++++++++
+ 13 files changed, 275 insertions(+), 138 deletions(-)
+7988bd0 Chore: Exclude local source backup
+
+ .gitignore | 2 ++
+ 1 file changed, 2 insertions(+)
+bfaff78 Feat: Add JSON backup recovery and evaluation evidence
+
+ README.md                             |  87 ++++++++++++++++++++++++++
+ docs/logs/clone-pull-verification.txt |   2 +
+ docs/logs/git-branches.txt            |   3 +
+ docs/logs/git-history.txt             |  15 +++++
+ docs/logs/git-reflog.txt              |   1 +
+ docs/logs/git-remote.txt              |   2 +
+ docs/logs/performance-1000.md         |  10 +++
+ game.py                               | 113 ++++++++++++++++++++++++++--------
+ performance_test.py                   |  41 ++++++++++++
+ test_backup.py                        |  65 +++++++++++++++++++
+ 10 files changed, 313 insertions(+), 26 deletions(-)
+2f61eb5 Docs: Add quiz screenshots
+
+ docs/screenshots/add_quiz.png.png | Bin 0 -> 50215 bytes
+ docs/screenshots/list.png.png     | Bin 0 -> 64062 bytes
+ docs/screenshots/play.png.png     | Bin 0 -> 45102 bytes
+ docs/screenshots/score.png.png    | Bin 0 -> 23576 bytes
+ state.json                        |  16 +++++++++++++---
+ 5 files changed, 13 insertions(+), 3 deletions(-)
+7ca4da7 Docs: Fix screenshot filenames
+
+ docs/screenshots/{menu.png.png => menu.png} | Bin
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+e3aab0e Docs: Add final screenshots
+
+ .../screenshots/git-log.png.png                         | Bin
+ docs/screenshots/menu.png.png                           | Bin 0 -> 45863 bytes
+ 2 files changed, 0 insertions(+), 0 deletions(-)
+01441dc Docs: Add Git screenshot
+
+ ...1\254\353\246\260\354\203\267 2026-11-03 195442.png" | Bin 0 -> 72809 bytes
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+1e0ed55 Docs: Update README from cloned repository
+
+ README.md | 3 +++
+ 1 file changed, 3 insertions(+)
+42d4ffd Docs: Explain exception handling
+
+ README.md | 3 +++
+ 1 file changed, 3 insertions(+)
+1ae0667 Docs: Explain Git workflow
+
+ README.md | 3 +++
+ 1 file changed, 3 insertions(+)
+f5f4935 Docs: Explain JSON persistence
+
+ README.md | 3 +++
+ 1 file changed, 3 insertions(+)
+8532d00 Docs: Explain class responsibilities
+
+ README.md | 3 +++
+ 1 file changed, 3 insertions(+)
+f8a418a Docs: Explain conditions and loops
+
+ README.md | 3 +++
+ 1 file changed, 3 insertions(+)
+4f2c59c Docs: Explain Python data types
+
+ README.md | 3 +++
+ 1 file changed, 3 insertions(+)
+71ddccc Docs: Explain invalid input handling
+
+ README.md | 3 +++
+ 1 file changed, 3 insertions(+)
+b60bc19 Docs: Add quiz game usage guide
+
+ README.md | 3 +++
+ 1 file changed, 3 insertions(+)
+8b3591b Feat: Add Python quiz game
+
+ .gitignore                 | 222 +--------------------------------------------
+ README.md                  | 127 +++++++++++++++++++++++++-
+ docs/GIT-STEPS.md          |  60 ++++++++++++
+ docs/screenshots/README.md |  11 +++
+ game.py                    | 170 ++++++++++++++++++++++++++++++++++
+ main.py                    |   6 ++
+ quiz.py                    |  33 +++++++
+ state.json                 |  89 ++++++++++++++++++
+ tests.py                   |  73 +++++++++++++++
+ 9 files changed, 571 insertions(+), 220 deletions(-)
+e1af6c0 Initial commit
+
+ .gitignore | 220 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ README.md  |   2 +
+ 2 files changed, 222 insertions(+)

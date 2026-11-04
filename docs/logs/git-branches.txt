@@ -1,3 +1,5 @@
-$ git branch -avv\n* main                2f61eb5 [origin/main] Docs: Add quiz screenshots
-  remotes/origin/HEAD -> origin/main
-  remotes/origin/main 2f61eb5 Docs: Add quiz screenshots
+$ git branch -avv
+  feature/quiz-validation f5c8a2e Fix: Validate answer input type
+* main                    c7fd934 [origin/main] Merge: Quiz validation improvement
+  remotes/origin/HEAD     -> origin/main
+  remotes/origin/main     c7fd934 Merge: Quiz validation improvement
