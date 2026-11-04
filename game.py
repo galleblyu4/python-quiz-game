@@ -28,44 +28,105 @@ class QuizGame:
         self.best_score: dict | None = None
         self.load_state()
 
+    def _read_state(self, path: Path):
+        with path.open("r", encoding="utf-8") as file:
+            data = json.load(file)
+
+        if not isinstance(data, dict):
+            raise ValueError("JSON ??? ??? ???????.")
+        if not isinstance(data.get("quizzes"), list):
+            raise ValueError("quizzes ??? ????.")
+
+        quizzes = [Quiz.from_dict(q) for q in data["quizzes"]]
+        score = data.get("best_score")
+
+        if score is not None:
+            if (not isinstance(score, dict)
+                    or type(score.get("points")) is not int
+                    or not 0 <= score["points"] <= 100
+                    or type(score.get("correct")) is not int
+                    or type(score.get("total")) is not int
+                    or score["total"] < 1
+                    or not 0 <= score["correct"] <= score["total"]):
+                raise ValueError("?? ?? ???? ???????.")
+
+        return quizzes, score
+
     def load_state(self) -> None:
-        if not self.state_path.exists():
-            print("기본 퀴즈를 불러왔습니다. (첫 실행)")
-            return
-        try:
-            with self.state_path.open("r", encoding="utf-8") as file:
-                state = json.load(file)
-            if not isinstance(state, dict) or not isinstance(state.get("quizzes"), list):
-                raise ValueError("quizzes 배열이 없습니다.")
-            quizzes = [Quiz.from_dict(item) for item in state["quizzes"]]
-            raw_score = state.get("best_score")
-            if raw_score is not None:
-                if (not isinstance(raw_score, dict) or
-                        type(raw_score.get("points")) is not int or not 0 <= raw_score["points"] <= 100 or
-                        type(raw_score.get("correct")) is not int or
-                        type(raw_score.get("total")) is not int or
-                        not 0 <= raw_score["correct"] <= raw_score["total"] or raw_score["total"] < 1):
-                    raise ValueError("best_score 형식이 잘못되었습니다.")
-            self.quizzes = quizzes
-            self.best_score = raw_score
-            print(f"저장된 데이터를 불러왔습니다. (퀴즈 {len(quizzes)}개)")
-        except (OSError, UnicodeError, json.JSONDecodeError, ValueError, TypeError) as error:
-            print(f"⚠️ 저장 파일을 읽지 못했습니다: {error}")
-            print("기본 퀴즈로 시작합니다. 다음 저장 때 파일이 복구됩니다.")
+        backup = self.state_path.with_name(self.state_path.name + ".bak")
+
+        for candidate in (self.state_path, backup):
+            if not candidate.exists():
+                continue
+            try:
+                quizzes, score = self._read_state(candidate)
+                self.quizzes = quizzes
+                self.best_score = score
+                if candidate == backup:
+                    print("?? ???? ???? ??????.")
+                else:
+                    print(f"??? ?? {len(quizzes)}?? ??????.")
+                return
+            except (OSError, UnicodeError, json.JSONDecodeError,
+                    ValueError, TypeError) as error:
+                print(f"?? ?? ?? ({candidate.name}): {error}")
+
+        print("??? ?? ??? ?? ?? ??? ?????.")
 
     def save_state(self) -> bool:
+        import os
+        import shutil
+        import tempfile
+
         data = {
             "quizzes": [q.to_dict() for q in self.quizzes],
             "best_score": self.best_score,
         }
+
+        backup = self.state_path.with_name(self.state_path.name + ".bak")
+        temp_name = None
+
         try:
-            with self.state_path.open("w", encoding="utf-8") as file:
+            self.state_path.parent.mkdir(parents=True, exist_ok=True)
+
+            # ???? ?? ?? ??? ????.
+            if self.state_path.exists():
+                try:
+                    self._read_state(self.state_path)
+                    shutil.copy2(self.state_path, backup)
+                except (OSError, UnicodeError, json.JSONDecodeError,
+                        ValueError, TypeError):
+                    print("??? ??? ??? ???? ????.")
+
+            with tempfile.NamedTemporaryFile(
+                mode="w",
+                encoding="utf-8",
+                dir=self.state_path.parent,
+                prefix=".quiz-",
+                suffix=".tmp",
+                delete=False,
+            ) as file:
+                temp_name = file.name
                 json.dump(data, file, ensure_ascii=False, indent=2)
                 file.write("\n")
+
+            os.replace(temp_name, self.state_path)
+            temp_name = None
+
+            # ?? ???? ??? ??? ???.
+            if not backup.exists():
+                shutil.copy2(self.state_path, backup)
+
             return True
-        except (OSError, UnicodeError, TypeError, ValueError) as error:
-            print(f"⚠️ 데이터를 저장하지 못했습니다: {error}")
+        except (OSError, UnicodeError, ValueError, TypeError) as error:
+            print(f"?? ??: {error}")
             return False
+        finally:
+            if temp_name is not None:
+                try:
+                    os.unlink(temp_name)
+                except OSError:
+                    pass
 
     @staticmethod
     def prompt(message: str) -> str:

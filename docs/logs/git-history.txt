@@ -1,0 +1,15 @@
+$ git log --oneline --graph --all -30\n* 2f61eb5 Docs: Add quiz screenshots
+* 7ca4da7 Docs: Fix screenshot filenames
+* e3aab0e Docs: Add final screenshots
+* 01441dc Docs: Add Git screenshot
+* 1e0ed55 Docs: Update README from cloned repository
+* 42d4ffd Docs: Explain exception handling
+* 1ae0667 Docs: Explain Git workflow
+* f5f4935 Docs: Explain JSON persistence
+* 8532d00 Docs: Explain class responsibilities
+* f8a418a Docs: Explain conditions and loops
+* 4f2c59c Docs: Explain Python data types
+* 71ddccc Docs: Explain invalid input handling
+* b60bc19 Docs: Add quiz game usage guide
+* 8b3591b Feat: Add Python quiz game
+* e1af6c0 Initial commit
