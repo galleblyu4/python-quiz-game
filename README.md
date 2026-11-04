@@ -17,7 +17,7 @@ Windows에서 `python` 명령이 동작하지 않으면 `py main.py`, macOS/Linu
 
 | 메뉴 | 기능 | 검증 방법 |
 |---|---|---|
-| 1 | 퀴즈 풀기와 정답/오답 안내 | 문제 7개를 풀고 결과 확인 |
+| 1 | 퀴즈 풀기와 정답/오답 안내 | 현재 저장된 모든 문제를 풀고 결과 확인 |
 | 2 | 퀴즈 추가 | 문제·선택지 4개·정답 입력 후 저장 |
 | 3 | 퀴즈 목록 | 기본 및 추가 문제 표시 |
 | 4 | 최고 점수 | 최고 점수 표시 및 기록 유지 |
@@ -33,15 +33,18 @@ python-quiz-game/
 ├── quiz.py             # Quiz 클래스: 한 문제, 출력, 정답 확인
 ├── game.py             # QuizGame 클래스: 메뉴, 입력, 게임, 저장/불러오기
 ├── state.json          # 실행 시 생성되는 퀴즈 및 최고 점수 데이터
-├── tests.py            # 표준 라이브러리 unittest 검증
+├── tests.py            # 기본 단위 테스트
+├── test_backup.py      # 백업·복구 단위 테스트
+├── performance_test.py # 1,000문제 성능 분석
 ├── .gitignore          # 불필요한 파일 제외
 └── docs/
-    └── screenshots/    # 실제 실행 화면 증거를 저장하는 곳
+    ├── logs/           # Git 증빙 및 성능 분석
+    └── screenshots/    # 실제 실행 화면 증거
 ```
 
 ## 5. JSON 데이터 파일
 
-프로젝트 루트의 `state.json`을 UTF-8로 저장한다. 첫 실행에서 파일이 없으면 기본 퀴즈 7개로 시작하며, 종료하거나 퀴즈를 추가하거나 게임을 마치면 파일이 만들어진다. 손상된 JSON은 기본 퀴즈로 복구한다. **기존 저장 데이터를 유지하려면 `state.json`을 삭제하지 않는다.**
+프로젝트 루트의 `state.json`을 UTF-8로 저장한다. 첫 실행에서 파일이 없으면 기본 퀴즈 7개로 시작하며, 종료하거나 퀴즈를 추가하거나 게임을 마치면 파일이 만들어진다. 손상된 JSON은 유효한 백업이 있으면 백업에서 복원하고, 두 파일 모두 손상되었다면 기본 퀴즈로 시작한다. **기존 저장 데이터를 유지하려면 `state.json`을 삭제하지 않는다.**
 
 ```json
 {
@@ -62,7 +65,8 @@ python-quiz-game/
 ## 7. 실행 검증
 
 ```bash
-python -m unittest -v tests
+python -m unittest -v tests test_backup
+python performance_test.py
 ```
 
 - [ ] Python 3.10 이상 버전 확인
@@ -112,7 +116,7 @@ git remote -v
 - 클래스: 관련 데이터(속성)와 행동(메서드)을 묶는 설계도. `__init__`는 객체를 만들 때 호출되고 `self`는 현재 객체를 가리킴
 - JSON: 데이터를 텍스트로 구조화해 저장하는 형식. `try/except`는 파일 오류나 입력 오류가 있어도 프로그램이 중단되지 않도록 도움
 
-## 10. 제출용 실제 스크린샷 (촬영 후 삽입)
+## 10. 제출용 실제 스크린샷
 
 - [메뉴](docs/screenshots/menu.png)
 - [퀴즈 풀기](docs/screenshots/play.png)
@@ -120,9 +124,8 @@ git remote -v
 - [퀴즈 목록](docs/screenshots/list.png)
 - [최고 점수](docs/screenshots/score.png)
 - [Git 로그](docs/screenshots/git-log.png)
-- [개발 환경](docs/screenshots/environment.png)
 
-> 아직 스크린샷 파일을 촬영하지 않았다면 위 링크는 열리지 않는다. 반드시 본인의 실제 실행 화면을 캡처하여 추가해야 한다.
+> 위 링크는 저장소에 실제 포함된 실행 화면이다. 개발 환경(Python/Git 버전) 캡처는 필요하면 별도로 추가한다.
 
 ## 퀴즈 게임 사용 안내
 메뉴에서 1번은 퀴즈 풀기, 2번은 퀴즈 추가, 3번은 목록 확인, 4번은 최고 점수 확인, 5번은 종료입니다.
@@ -151,89 +154,104 @@ try와 except를 사용하면 잘못된 입력이나 파일 오류가 발생해�
 ## Git 복제 실습
 복제한 저장소에서 README를 수정하고 GitHub에 공유했습니다.
 
+## 11. AI 사전평가 피드백 보완 사항
 
-## AI ?? ??: ??, ??, Git ??
+### 기본 퀴즈와 실행 흐름 (#1, #4, #10)
 
-### ?? Git ?? ??
+기본 퀴즈는 `game.py`의 `DEFAULT_QUIZZES` **7개**이다. 사용자 추가 퀴즈가 저장되어 있다면 실제 플레이 문제 수는 더 늘어난다. 프로젝트의 `state.json`에는 현재 **9개 문제**와 최고 점수 기록이 들어 있다.
 
-`docs/logs/git-history.txt`: ?? ?? ??? ???
+실행 예시:
 
-`docs/logs/git-remote.txt`: GitHub ?? ??? ??
+```text
+=== 반전 상식 퀴즈 ===
+1. 퀴즈 풀기
+2. 퀴즈 추가
+3. 퀴즈 목록
+4. 최고 점수
+5. 종료
+번호를 선택하세요 (1~5): 3
+```
 
-`docs/logs/git-branches.txt`: ????? ??? ??
+프로그램 시작 → `state.json` 로드 → 파일 오류 시 백업 확인 → 메뉴 → 풀이/추가 → 저장 → 정상 종료 순서로 동작한다. 잘못된 입력은 `ask_number()`와 `ask_text()`에서 처리하므로 게임 로직과 분리된다.
 
-`docs/logs/git-reflog.txt`: ?? Git ????? ?? ??
+### 실제 Git 증빙 (#5, #6, #7, #12)
 
-`docs/logs/clone-pull-verification.txt`: ?? ????? clone/pull ???
+- [`git-history.txt`](docs/logs/git-history.txt): 당시 수집된 커밋 그래프
+- [`git-remote.txt`](docs/logs/git-remote.txt): 원격 저장소 주소
+- [`git-branches.txt`](docs/logs/git-branches.txt): 당시 브랜치 정보
+- [`git-reflog.txt`](docs/logs/git-reflog.txt): 해당 PC의 로컬 reflog
+- [`clone-pull-verification.txt`](docs/logs/clone-pull-verification.txt): 별도 임시 디렉터리 clone 및 pull 확인
+- [`git-evidence-check.md`](docs/logs/git-evidence-check.md): 증빙의 범위와 현재 부족한 사항
 
-? ??? ??? Git ??? ?? ????, ???? ?? ????
-?? ??? ????? ???. ?? ?? ??? ?? ???
-? ??? ?? ?? ??? ??? ???? ??.
+**중요:** Git 로그·브랜치는 수집 당시의 PC 환경과 시점을 보여준다. 소스 ZIP에는 `.git` 이력이 들어 있지 않으므로, ZIP에서 과거 병합 이력을 검증하거나 새로운 이력을 꾸며낼 수 없다. **커밋 10개 이상**과 **기능별 의미 있는 변경 10개 이상**은 다른 조건이다. 두 번째 조건은 실제 `git show`/`git log --stat`으로 판단해야 한다.
 
-### 1,000?? ?? ??
+현재 컴퓨터에서 최신 증빙을 갱신하려면 다음 명령을 실행한다.
 
-`py performance_test.py` ???? 1,000?? JSON ???,
-???? ? ??? ????.
+```powershell
+py tools/collect_git_evidence.py
+```
 
-??: `docs/logs/performance-1000.md`
+별도 브랜치 작업·병합 자체는 이 스크립트가 대신하지 않으며, 실제 수행했을 때에만 `git log --graph --all`에 나타난다.
 
-??? ?? ?? O(n), ?? ??? ???? ???? ???
-????? O(n)??.
+### 클래스 설계와 역할 분리 (#8, #9, #13)
 
-??? ???? ?? ??? ??? 20??? ??? ??,
-?? ?? ??? ?? ??, SQLite ?? ??? ?? ????.
-?? ??? ???? ?? ??? ?? ????.
-
-### ?? ??? ??? ??
-
-???? UTF-8 ??? `state.json`? ????.
-
-?? ????? ?? ??? ??? ? ??? ????
-?? ?? ??? ??? ??? ???.
-
-??? ?? ??? `state.json.bak`? ????.
-?? ???? ?? ??? ????.
-
-???? ?? ? ?? ??? ?? ??, ??? ??????
-?? ??? ????. ? ? ???? ??? ?? ??? ????.
-
-??? ???? ?? ??? ???? ???.
-
-**?? ?? ??**
-
-1. ????? ????.
-2. `state.json`? `state.json.bak`? ?? ??? ????.
-3. ??? ???? ????.
-4. ??? ?????? ????? ???? ??? ???.
-5. ???? ?? ???? ??? ???? ??? ????.
-
-??? ??? ??? ??? ? ????,
-??? ?? ? ???? ??? ???? ??.
-
-### ?? ?? ???
-
-| ?? ?? | ?? ?? |
+| 클래스·메서드 | 책임 |
 |---|---|
-| ?? ????????? ?? | `quiz.py`? `Quiz` |
-| ?? ?? | `quiz.py`? `is_correct()` |
-| ?? ?? | `game.py`? `play()` |
-| ? ?? ?? | `game.py`? `add_quiz()` |
-| ?? ? ?? ?? | `game.py`? `run()` |
-| ?? ?? ?? | `game.py`? `ask_number()` |
-| JSON ??? ?? | `game.py`? `save_state()` |
-| ?? ????? ?? | `game.py`? `_read_state()`, `load_state()` |
-| ?? ??? | `tests.py`, `test_backup.py` |
+| `Quiz.__init__()` | 문제/선택지/정답 검증 및 생성 |
+| `Quiz.is_correct()` | 답안 정오 판정 |
+| `Quiz.to_dict()` / `Quiz.from_dict()` | JSON 자료구조 변환 |
+| `QuizGame.run()` | 메뉴와 선택 흐름 제어 |
+| `QuizGame.play()` | 전체 문제 풀이 및 점수 계산 |
+| `QuizGame.add_quiz()` | 사용자 문제 입력 및 저장 |
+| `QuizGame.ask_number()` | 빈 값·문자·범위 오류 입력 재시도 |
+| `QuizGame._read_state()` | 저장 파일 형식 검증 |
+| `QuizGame.load_state()` | 원본 우선 로드, 손상 시 백업 복원 |
+| `QuizGame.save_state()` | 임시 파일 저장, 백업, 교체 |
 
-??? ??? ??? ?? ??? ????.
+`Quiz`는 문제와 정답을 독립적으로 나타내므로, 콘솔이 아닌 웹 학습 앱의 문제 모델이나 단위 테스트에서도 재사용할 수 있다. 메뉴 입력과 JSON 처리를 `Quiz`에 넣지 않아 각 클래스를 독립적으로 변경·테스트할 수 있다.
 
-`py -m unittest -v tests test_backup`
+### 1,000개 이상 성능 검증 (#16)
 
-### ??? ?? ??
+```powershell
+py performance_test.py
+```
 
-?? ? ?? JSON ?? ? ?? ? ?? ?? ? ?? ??
-? ?? ??/?? ? ?? ? ??? ?? ? ?? ??
+실제 `QuizGame` 객체에 **1,000문제**를 넣어 임시 JSON에 저장하고, 다시 읽은 뒤 검색한다. 실행 결과는 [`performance-1000.md`](docs/logs/performance-1000.md)에 기록된다. 프로그램의 실제 `state.json`은 변경하지 않는다.
 
-### ??? ???
+현재 구조는 전체 목록을 메모리에 적재하므로 메모리 O(n), 검색 O(n)이다. 목록을 20개 단위로 표시하고 반복 검색에 색인을 활용하거나, 문항 수가 크게 증가하면 SQLite 및 페이징을 적용하는 것이 바람직하다. 실측값은 컴퓨터 환경에 따라 달라진다.
 
-`Quiz` ???? ?? ?? ???? ????? ??? ??? ? ??.
-`QuizGame`? ?? ??? ?? ?? ??? ????.
+### 자동 백업·복구 및 예외 처리 (#11, #15, #17)
+
+저장 정책:
+
+1. `state.json`에 기존 **정상 데이터**가 있다면 이를 `state.json.bak`에 복사한다.
+2. 변경 데이터를 UTF-8 JSON 임시 파일로 기록한 뒤 `os.replace()`로 원본을 교체해 부분 쓰기 위험을 줄인다.
+3. 최초 저장에는 백업이 없으므로 새 원본으로 `state.json.bak`도 생성한다.
+4. 원본이 손상되거나 없어지면 유효한 `.bak` 파일을 읽는다. 백업까지 손상되었으면 기본 7문제로 시작한다.
+5. 손상된 원본은 정상 백업을 덮어쓰지 않는다. 파일 쓰기 권한이나 디스크 공간이 부족하면 저장 실패 메시지를 표시한다.
+
+수동 복구: 프로그램을 종료하고 두 JSON 파일을 별도 위치에 복사해 보존한 다음, 프로그램을 재실행하면 백업 로드를 시도한다. 정상 종료하면 복원된 내용을 원본에 다시 기록한다. 백업은 직전의 정상 저장 버전이므로 **가장 최근 추가한 문제가 복원되지 않을 수 있다.**
+
+`Ctrl+C`, EOF는 `InputStopped`로 전환해 안전한 종료 흐름에서 저장한다. 외부에서 강제로 종료하는 `SIGTERM`은 환경에 따라 별도 처리나 OS 수준 복구가 필요하므로 여기서 완전한 보장을 주장하지 않는다.
+
+검증 명령:
+
+```powershell
+py -m unittest -v tests test_backup
+```
+
+### 유지보수·요구사항 변경 가이드 (#18)
+
+| 변경 요구 | 수정 대상 | 검증 포인트 |
+|---|---|---|
+| 점수 계산법 변경 | `game.py` → `QuizGame.play()` | 반올림·최고 점수 갱신 |
+| 퀴즈 선택지 개수 변경 | `quiz.py` → `Quiz.__init__()`·`show()` | 입력 번호 범위·JSON 호환성 |
+| 정답 판정 변경 | `quiz.py` → `Quiz.is_correct()` | 정답과 오답 판정 |
+| 기본 퀴즈 변경 | `game.py` → `DEFAULT_QUIZZES` | 저장 파일이 없는 최초 실행 |
+| 추가 입력 과정 변경 | `game.py` → `add_quiz()` | 입력 검증 및 저장 |
+| 메뉴 변경 | `game.py` → `run()` | 메뉴 번호·종료 경로 |
+| 파일 구조 변경 | `game.py` → `_read_state()`, `save_state()` | 이전 JSON 호환성·백업 복원 |
+| 저장 오류 처리 변경 | `game.py` → `save_state()`, `load_state()` | 권한 오류·손상된 파일 |
+| 대규모 문항 성능 개선 | `performance_test.py`, `show_list()` | 시간/메모리·페이지 출력 |
+
+수정 후 **`py -m unittest -v tests test_backup`**로 회귀 테스트를 수행하고, 자료 저장 방식이나 큰 데이터 처리 변경이 있다면 **`py performance_test.py`**를 추가 실행한다.

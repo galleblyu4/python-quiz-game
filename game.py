@@ -33,9 +33,9 @@ class QuizGame:
             data = json.load(file)
 
         if not isinstance(data, dict):
-            raise ValueError("JSON ??? ??? ???????.")
+            raise ValueError("JSON 최상위 데이터는 객체여야 합니다.")
         if not isinstance(data.get("quizzes"), list):
-            raise ValueError("quizzes ??? ????.")
+            raise ValueError("quizzes 목록이 없거나 형식이 잘못되었습니다.")
 
         quizzes = [Quiz.from_dict(q) for q in data["quizzes"]]
         score = data.get("best_score")
@@ -48,7 +48,7 @@ class QuizGame:
                     or type(score.get("total")) is not int
                     or score["total"] < 1
                     or not 0 <= score["correct"] <= score["total"]):
-                raise ValueError("?? ?? ???? ???????.")
+                raise ValueError("최고 점수 데이터 형식이 올바르지 않습니다.")
 
         return quizzes, score
 
@@ -63,15 +63,15 @@ class QuizGame:
                 self.quizzes = quizzes
                 self.best_score = score
                 if candidate == backup:
-                    print("?? ???? ???? ??????.")
+                    print("백업 파일에서 데이터를 복구했습니다.")
                 else:
-                    print(f"??? ?? {len(quizzes)}?? ??????.")
+                    print(f"저장된 퀴즈 {len(quizzes)}개를 불러왔습니다.")
                 return
             except (OSError, UnicodeError, json.JSONDecodeError,
                     ValueError, TypeError) as error:
-                print(f"?? ?? ?? ({candidate.name}): {error}")
+                print(f"저장 파일 오류 ({candidate.name}): {error}")
 
-        print("??? ?? ??? ?? ?? ??? ?????.")
+        print("유효한 저장 데이터가 없어 기본 퀴즈를 사용합니다.")
 
     def save_state(self) -> bool:
         import os
@@ -89,14 +89,14 @@ class QuizGame:
         try:
             self.state_path.parent.mkdir(parents=True, exist_ok=True)
 
-            # ???? ?? ?? ??? ????.
+            # 손상되지 않은 기존 데이터만 백업합니다.
             if self.state_path.exists():
                 try:
                     self._read_state(self.state_path)
                     shutil.copy2(self.state_path, backup)
                 except (OSError, UnicodeError, json.JSONDecodeError,
                         ValueError, TypeError):
-                    print("??? ??? ??? ???? ????.")
+                    print("손상된 원본으로 백업을 덮어쓰지 않습니다.")
 
             with tempfile.NamedTemporaryFile(
                 mode="w",
@@ -113,13 +113,13 @@ class QuizGame:
             os.replace(temp_name, self.state_path)
             temp_name = None
 
-            # ?? ???? ??? ??? ???.
+            # 처음 저장할 때도 백업을 생성합니다.
             if not backup.exists():
                 shutil.copy2(self.state_path, backup)
 
             return True
         except (OSError, UnicodeError, ValueError, TypeError) as error:
-            print(f"?? ??: {error}")
+            print(f"저장 실패: {error}")
             return False
         finally:
             if temp_name is not None:
