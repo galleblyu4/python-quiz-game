@@ -255,3 +255,9 @@ py -m unittest -v tests test_backup
 | 대규모 문항 성능 개선 | `performance_test.py`, `show_list()` | 시간/메모리·페이지 출력 |
 
 수정 후 **`py -m unittest -v tests test_backup`**로 회귀 테스트를 수행하고, 자료 저장 방식이나 큰 데이터 처리 변경이 있다면 **`py performance_test.py`**를 추가 실행한다.
+
+## Verified Git Commit History
+- [Public GitHub commit history](https://github.com/galleblyu4/python-quiz-game/commits/main)
+- Full Git history bundle: docs/git-history.bundle
+- Verify with: git bundle verify docs/git-history.bundle
+- The bundle includes original Git history and branch references.
