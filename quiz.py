@@ -1,4 +1,4 @@
-"""한 문제를 표현하는 Quiz 클래스."""
+﻿"""한 문제를 표현하는 Quiz 클래스."""
 
 
 class Quiz:
@@ -21,7 +21,7 @@ class Quiz:
             print(f"  {index}. {choice}")
 
     def is_correct(self, selected: int) -> bool:
-        return selected == self.answer
+        return type(selected) is int and selected == self.answer
 
     def to_dict(self) -> dict:
         return {"question": self.question, "choices": self.choices, "answer": self.answer}
@@ -31,3 +31,4 @@ class Quiz:
         if not isinstance(data, dict):
             raise ValueError("퀴즈 데이터 형식이 올바르지 않습니다.")
         return cls(data.get("question"), data.get("choices"), data.get("answer"))
+
